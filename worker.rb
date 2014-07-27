@@ -8,6 +8,7 @@ default_redis_url = "redis://localhost"
 uri = URI(ENV["REDISTOGO_URL"] || default_redis_url)
 REDIS = Redis.new(url: uri.to_s)
 
+$stdout.sync = true
 LOGGER = Logger.new($stdout)
 LOGGER.level = Logger.const_get ENV["LOG_LEVEL"] || "ERROR"
 

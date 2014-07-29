@@ -2,7 +2,6 @@ require "logging"
 require "group_me"
 
 module Commands
-  extend Logging
   extend self
 
   COMMAND_PREFIX = /^!kryppiebot,?\s+/i
@@ -17,7 +16,7 @@ module Commands
     if COMMAND_PREFIX =~ text
       fetch(text.split(/\s+/)[1].to_s.downcase) { NullCommand.new(BOT_ID) }
     else
-      ->(msg) { log(:info).message(msg.inspect) }
+      ->(msg) { Logging.log(:info).message(msg.inspect) }
     end
   end
 
@@ -26,8 +25,6 @@ module Commands
   end
 
   class EchoCommand
-    include GroupMe
-
     def initialize(bot_id, message)
       @bot_id = bot_id
       @message = message
@@ -36,7 +33,7 @@ module Commands
     def execute
       name = @message["name"]
       text = @message["text"]
-      post_as_bot(@bot_id, generate_response(name, parse_echo(text)))
+      GroupMe.post_as_bot(@bot_id, generate_response(name, parse_echo(text)))
     end
 
     private
@@ -54,15 +51,13 @@ module Commands
   end
 
   class NullCommand
-    include GroupMe
-
     def initialize(bot_id)
       @bot_id = bot_id
     end
 
     def call(message)
       name = message["name"].to_s.split(/\s+/).first
-      post_as_bot(@bot_id, generate_response(name))
+      GroupMe.post_as_bot(@bot_id, generate_response(name))
     end
 
     private

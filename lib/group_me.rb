@@ -3,7 +3,7 @@ require "logging"
 require "net/http"
 
 module GroupMe
-  extend Logging
+  include Logging
   extend self
 
   def post_as_bot(bot_id, message)

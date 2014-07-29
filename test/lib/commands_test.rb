@@ -26,15 +26,15 @@ end
 class EchoCommandTest < Test::Unit::TestCase
   def test_execute_blank
     message = { "name" => "george", "text" => "!kryppiebot echo" }
-    command = flexmock(Commands::EchoCommand.new(message), :strict)
-    command.should_receive(:post_as_bot).with("george, you didn't say anything.")
+    command = flexmock(Commands::EchoCommand.new("foo", message), :strict)
+    command.should_receive(:post_as_bot).with("foo", "george, you didn't say anything.")
     command.execute
   end
 
   def test_execute
     message = { "name" => "george", "text" => "!kryppiebot echo foo" }
-    command = flexmock(Commands::EchoCommand.new(message), :strict)
-    command.should_receive(:post_as_bot).with("george, you said, \"foo\".")
+    command = flexmock(Commands::EchoCommand.new("foo", message), :strict)
+    command.should_receive(:post_as_bot).with("foo", "george, you said, \"foo\".")
     
     command.execute
   end
@@ -42,22 +42,22 @@ end
 
 class NullCommandTest < Test::Unit::TestCase
   def test_call_with_first_name
-    command = flexmock(Commands::NullCommand.new, :strict)
-    command.should_receive(:post_as_bot).with("I don't get it, george.")
+    command = flexmock(Commands::NullCommand.new("foo"), :strict)
+    command.should_receive(:post_as_bot).with("foo", "I don't get it, george.")
 
     command.call({"name" => "george"})
   end
 
   def test_call_with_first_and_last_name
-    command = flexmock(Commands::NullCommand.new, :strict)
-    command.should_receive(:post_as_bot).with("I don't get it, george.")
+    command = flexmock(Commands::NullCommand.new("foo"), :strict)
+    command.should_receive(:post_as_bot).with("foo", "I don't get it, george.")
 
     command.call({"name" => "george murphy"})
   end
 
   def test_call_with_nil_name
-    command = flexmock(Commands::NullCommand.new, :strict)
-    command.should_receive(:post_as_bot).with("I don't get it.")
+    command = flexmock(Commands::NullCommand.new("foo"), :strict)
+    command.should_receive(:post_as_bot).with("foo", "I don't get it.")
 
     command.call({})
   end

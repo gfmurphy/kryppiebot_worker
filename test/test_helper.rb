@@ -1,10 +1,8 @@
 $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-require "test/unit"
 require "bundler/setup"
-
 Bundler.require(:default, :test)
 
-require "flexmock/test_unit"
-
-
+require "test/unit"
+require "mocha/test_unit"
+require "mocha/mini_test"
 

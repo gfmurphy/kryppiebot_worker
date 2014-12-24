@@ -1,5 +1,6 @@
 require "commands/echo_command"
 require "commands/null_command"
+require "commands/ping_command"
 require "listeners"
 require "group_me"
 
@@ -9,7 +10,8 @@ module Commands
   COMMAND_PREFIX = /^!kryppiebot,?\s+/i
 
   @commands = {
-    "echo" => -> (message) { EchoCommand.new(message).execute }
+    "echo" => -> (message) { EchoCommand.new(message).execute },
+    "ping" => -> (message) { PingCommand.new.execute }
   }
 
   def handler(message)

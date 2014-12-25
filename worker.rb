@@ -7,6 +7,7 @@ require "redis"
 require "rufus/scheduler"
 require "shit_bfl_says"
 require "tweet_popular_message"
+require "twitter"
 require "uri"
 require "user_recent_messages"
 

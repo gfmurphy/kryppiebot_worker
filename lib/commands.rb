@@ -1,8 +1,10 @@
 require "commands/echo_command"
+require "commands/leaderboard_command"
 require "commands/null_command"
 require "commands/ping_command"
 require "listeners"
 require "group_me"
+require "redis_cache"
 
 module Commands
   extend self
@@ -11,7 +13,8 @@ module Commands
 
   @commands = {
     "echo" => -> (message) { EchoCommand.new(message).execute },
-    "ping" => -> (message) { PingCommand.new.execute }
+    "ping" => -> (message) { PingCommand.new.execute },
+    "leaderboard" => -> (message) { LeaderboardCommand.new(redis_cache, message).execute }
   }
 
   def handler(message)
@@ -29,5 +32,10 @@ module Commands
 
   def fetch(key, &b)
     @commands.fetch(key, &b)
+  end
+
+  private
+  def redis_cache
+    RedisCache.new(Redis.new(url: REDIS_URL))
   end
 end

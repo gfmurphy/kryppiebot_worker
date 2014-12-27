@@ -22,6 +22,10 @@ class CommandsTest < Test::Unit::TestCase
     assert_kind_of Proc, Commands.handler("text" => "!kryppiebot ping")
   end
 
+  def test_handler_leaderboard_command
+    assert_kind_of Proc, Commands.handler("text" => '!kryppiebot leaderboard')
+  end
+
   def test_handler_unknown_command
     assert_kind_of Commands::NullCommand, Commands.handler("text" => "!kryppiebot foo")
   end

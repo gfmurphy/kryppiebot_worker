@@ -6,7 +6,7 @@ module Commands
 
     def initialize(cache, message)
       @cache = cache
-      options = parse_message(message)
+      options = parse_message(message["text"])
       @type = (options[:type] || "standard").downcase
       @period = (options[:period] || "month").downcase
     end

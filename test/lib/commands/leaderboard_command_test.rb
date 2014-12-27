@@ -22,7 +22,7 @@ module Commands
     end
 
     def test_standard_month_leaderboard
-      command = LeaderboardCommand.new(StubCache.new, "!kryppiebot leaderboard")
+      command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard"})
       command.expects(:get_leaderboard)
         .with(GroupMe::KRYPPIE_BOT_ID, "month", GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
         .returns(@messages)
@@ -33,7 +33,7 @@ module Commands
     end
 
     def test_hits_day_leaderboard
-      command = LeaderboardCommand.new(StubCache.new, "!kryppiebot leaderboard day hits")
+      command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard day hits"})
       command.expects(:get_leaderboard)
         .with(GroupMe::KRYPPIE_BOT_ID, "day", GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
         .returns(@messages)
@@ -44,7 +44,7 @@ module Commands
     end
 
     def test_likes_week_leaderboard
-      command = LeaderboardCommand.new(StubCache.new, "!kryppiebot leaderboard week likes")
+      command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard week likes"})
       command.expects(:get_leaderboard)
         .with(GroupMe::KRYPPIE_GROUP_ID, "week", GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
         .returns(@messages)
@@ -57,7 +57,7 @@ module Commands
     end
 
     def test_invalid_period
-      command = LeaderboardCommand.new(StubCache.new, "!kryppiebot leaderboard year")
+      command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard year"})
       command.expects(:post_as_bot).with("I don't have a report for 'year'. Try day|week|month")
       assert_nothing_raised do
         command.execute
@@ -65,7 +65,7 @@ module Commands
     end
 
     def test_invalid_type
-      command = LeaderboardCommand.new(StubCache.new,  "!kryppiebot leaderboard month foo")
+      command = LeaderboardCommand.new(StubCache.new,  {"text" => "!kryppiebot leaderboard month foo"})
       command.expects(:post_as_bot).with("What is the 'foo' leaderboard? I understand standard|likes|hits")
       assert_nothing_raised do
         command.execute

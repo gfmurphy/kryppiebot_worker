@@ -3,7 +3,7 @@ require "group_me"
 class TweetPopularMessage
   include GroupMe
 
-  POPULAR_TWEET_THRESHOLD = ENV["POPULAR_TWEET_THRESHOLD"]
+  POPULAR_TWEET_THRESHOLD = ENV["POPULAR_TWEET_THRESHOLD"].to_i
 
   def initialize(twitter)
     @twitter = twitter

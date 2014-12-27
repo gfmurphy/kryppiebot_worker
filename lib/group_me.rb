@@ -10,6 +10,21 @@ module GroupMe
   KRYPPIE_BOT_ACCESS_TOKEN = ENV["ACCESS_TOKEN"]
   KRYPPIE_BOT_ID = ENV["TOKEN"]
 
+  def get_group(group_id, token)
+    resp = api_request(get_group_url(group_id), attempts: 2) do |uri, headers|
+      headers.merge! "X-Access-Token" => token
+      Net::HTTP::Get.new(uri.request_uri, initheader=headers)
+    end
+
+    case resp
+    when Net::HTTPSuccess
+      JSON.parse(resp.body).fetch("response")
+    else
+      log(:error).message("Unable to fetch group %s" % resp.body)
+      {}
+    end
+  end
+
   def get_leaderboard(group_id, period, token)
     resp = api_request(get_leaderboard_url(group_id), attempts: 2) do |uri, headers|
       headers.merge! "X-Access-Token" => token
@@ -69,6 +84,11 @@ module GroupMe
     retry unless (attempts -= 1).zero?
     log(:error).error(e)
     {}
+  end
+
+  def get_group_url(group_id)
+    params = { id: group_id }
+    "https://api.groupme.com/v3/groups/%{id}" % params
   end
 
   def get_leaderboard_url(group_id)

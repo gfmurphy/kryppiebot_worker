@@ -13,7 +13,7 @@ module Commands
 
     def execute
       validate_command do
-        post_as_bot responses.fetch(@type).call
+        post_as_bot KRYPPIE_BOT_ID, responses.fetch(@type).call
       end
     end
 
@@ -33,9 +33,9 @@ module Commands
       types = responses.keys
 
       if !periods.include?(@period)
-        post_as_bot "I don't have a report for '#{@period}'. Try #{periods.join('|')}"
+        post_as_bot KRYPPIE_BOT_ID, "I don't have a report for '#{@period}'. Try #{periods.join('|')}"
       elsif !types.include?(@type)
-        post_as_bot "What is the '#{@type}' leaderboard? I understand #{types.join('|')}"
+        post_as_bot KRYPPIE_BOT_ID, "What is the '#{@type}' leaderboard? I understand #{types.join('|')}"
       else
         yield
       end

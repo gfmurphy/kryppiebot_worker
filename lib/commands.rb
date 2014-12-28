@@ -2,9 +2,10 @@ require "commands/echo_command"
 require "commands/leaderboard_command"
 require "commands/null_command"
 require "commands/ping_command"
-require "listeners"
 require "group_me"
-require "redis_cache"
+require "null_cache"
+require "listeners"
+
 
 module Commands
   extend self
@@ -36,6 +37,6 @@ module Commands
 
   private
   def redis_cache
-    RedisCache.new(Redis.new(url: REDIS_URL))
+    NullCache.new
   end
 end

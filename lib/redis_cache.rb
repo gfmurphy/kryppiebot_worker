@@ -1,3 +1,5 @@
+require "json"
+
 class RedisCache
   def initialize(redis)
     @redis = redis
@@ -9,7 +11,7 @@ class RedisCache
     if data.nil? && block_given?
       yield.tap { |d| cache_response(key, d, expires_in)  }
     else
-      data
+      Marshal.load(data)
     end
   end
 
@@ -17,7 +19,7 @@ class RedisCache
   def cache_response(key, data, expires=nil)
     expires = expires.to_i
     @redis.multi do
-      @redis.set key, data
+      @redis.set key, Marshal.dump(data)
       @redis.expires key, expires if expires > 0
     end
   end

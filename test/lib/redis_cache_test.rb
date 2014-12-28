@@ -14,7 +14,7 @@ class RedisCacheTest < Test::Unit::TestCase
   end
 
   def test_cache_hit
-    @redis.expects(:get).with(@key).returns("bar")
+    @redis.expects(:get).with(@key).returns(Marshal.dump("bar"))
     @redis.expects(:set).never
     @redis.expects(:expires).never
     assert_equal "bar", RedisCache.new(@redis).fetch(@key, expires_in: 1) { "bar" }
@@ -22,14 +22,14 @@ class RedisCacheTest < Test::Unit::TestCase
 
   def test_cache_miss_with_expiration
     @redis.expects(:get).with(@key).returns(nil)
-    @redis.expects(:set).with(@key, "bar")
+    @redis.expects(:set).with(@key, Marshal.dump("bar"))
     @redis.expects(:expires).with(@key, 1)
     assert_equal "bar", RedisCache.new(@redis).fetch(@key, expires_in: 1) { "bar" }
   end
   
   def test_cache_miss_without_expiration
     @redis.expects(:get).with(@key).returns(nil)
-    @redis.expects(:set).with(@key, "bar")
+    @redis.expects(:set).with(@key, Marshal.dump("bar"))
     @redis.expects(:expires).never
     assert_equal "bar", RedisCache.new(@redis).fetch(@key) { "bar" }
   end

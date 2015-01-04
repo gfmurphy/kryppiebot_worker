@@ -4,8 +4,12 @@ module Commands
   class NullCommand
     include GroupMe
 
-    def call(message)
-      name = message["name"].to_s.split(/\s+/).first
+    def initialize(message)
+      @message = message
+    end
+
+    def execute
+      name = @message["name"].to_s.split(/\s+/).first
       post_as_bot(KRYPPIE_BOT_ID, generate_response(name))
     end
 

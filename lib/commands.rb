@@ -12,27 +12,22 @@ module Commands
 
   COMMAND_PREFIX = /^!kryppiebot,?\s+/i
 
-  @commands = {
-    "echo" => -> (message) { EchoCommand.new(message).execute },
-    "ping" => -> (message) { PingCommand.new.execute },
-    "leaderboard" => -> (message) { LeaderboardCommand.new(redis_cache, message).execute }
-  }
-
   def handler(message)
     text = message["text"].to_s
-    if COMMAND_PREFIX =~ text
-      fetch(text.split(/\s+/)[1].to_s.downcase) { NullCommand.new }
+    if text =~ COMMAND_PREFIX
+      command = text.split(/\s+/)[1].to_s.downcase
+      {
+        "echo" => -> { EchoCommand.new(message).execute },
+        "ping" => -> { PingCommand.new.execute },
+        "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute }
+      }.fetch(command) { -> { NullCommand.new(message).execute } }
     else
-      ->(msg) {
+      -> {
         Listeners.new(Listeners.default_listeners).each do |listener|
-          listener.call(msg)
+          listener.call(message)
         end
       }
     end
-  end
-
-  def fetch(key, &b)
-    @commands.fetch(key, &b)
   end
 
   private

@@ -1,0 +1,9 @@
+language: ruby
+rvm:
+  - "2.1.5"
+branches:
+  only:
+    - master
+    - develop
+env: CODECLIMATE_REPO_TOKEN=bbb1e676f4deb7367151c87dfe0ee0d72f2e453be810c0c302647165620598f8
+script: bundle exec rake

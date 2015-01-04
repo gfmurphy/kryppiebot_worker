@@ -1,9 +1,11 @@
+require "group_me/urls"
 require "json"
 require "logging"
 require "net/http"
 
 module GroupMe
   include Logging
+  include GroupMe::Urls
   extend self
 
   KRYPPIE_GROUP_ID = ENV["GROUP"]
@@ -11,72 +13,55 @@ module GroupMe
   KRYPPIE_BOT_ID = ENV["TOKEN"]
 
   def get_group(group_id, token)
-    resp = api_request(get_group_url(group_id), attempts: 2) do |uri, headers|
+    resp = api_request(group_url(group_id), attempts: 2) do |uri, headers|
       headers.merge! "X-Access-Token" => token
-      Net::HTTP::Get.new(uri.request_uri, initheader=headers)
+      get(uri, headers)
     end
 
-    case resp
-    when Net::HTTPSuccess
-      JSON.parse(resp.body).fetch("response")
-    else
-      log(:error).message("Unable to fetch group %s" % resp.body)
-      {}
+    handle_response(resp) do |body|
+      JSON.parse(body).fetch("response")
     end
   end
 
   def get_leaderboard(group_id, period, token)
-    resp = api_request(get_leaderboard_url(group_id), attempts: 2) do |uri, headers|
+    resp = api_request(leaderboard_url(group_id), attempts: 2) do |uri, headers|
       headers.merge! "X-Access-Token" => token
       uri.query = URI.encode_www_form period: period
-      Net::HTTP::Get.new(uri.request_uri, initheader=headers)
+      get(uri, headers)
     end
 
-    case resp
-    when Net::HTTPSuccess
-      JSON.parse(resp.body).fetch("response").fetch("messages")
-    else
-      log(:error).message("Unable to fetch group leaderboard %s" % resp.body)
-      {}
+    handle_response(resp) do |body|
+      JSON.parse(body).fetch("response").fetch("messages")
     end
   end
 
   def get_message(group_id, message_id, token)
-    resp = api_request(get_message_url(group_id, message_id), attempts: 2) do |uri, headers|
+    resp = api_request(message_url(group_id, message_id), attempts: 2) do |uri, headers|
       headers.merge! "X-Access-Token" => token
-      Net::HTTP::Get.new(uri.request_uri, initheader=headers)
+      get(uri, headers)
     end
 
-    case resp
-    when Net::HTTPSuccess
-      JSON.parse(resp.body).fetch("response").fetch("message")
-    else
-      log(:error).message("Unable to find message: %s" % resp.body)
-      {}
+    handle_response(resp) do |body|
+      JSON.parse(body).fetch("response").fetch("message")
     end
   end
 
   def post_as_bot(bot_id, message)
     resp = api_request(bot_post_url) do |uri, headers|
-      Net::HTTP::Post.new(uri.request_uri, initheader=headers).tap { |req|
-        req.body = { bot_id: bot_id, text: message }.to_json
-      }
+      data = { bot_id: bot_id, text: message }.to_json
+      post(uri, headers, data)
     end
 
-    case resp
-    when Net::HTTPSuccess
+    handle_response(resp) do |body|
       log(:debug).message("Message sent successfully.")
-    else
-      log(:error).message("Message error: %s, %s" % [resp.code, resp.body])
     end
   end
 
-  private
   def api_request(url, options={}, &b)
     attempts ||= options.fetch(:attempts, 1)
     uri = URI(url)
-    Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-      headers = { "Content-Type" => "application/json" }
+    Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https") do |http|
+      headers = { "Accept" => "application/json" }
       request = yield uri, headers
       http.request(request)
     end
@@ -86,22 +71,24 @@ module GroupMe
     {}
   end
 
-  def get_group_url(group_id)
-    params = { id: group_id }
-    "https://api.groupme.com/v3/groups/%{id}" % params
+  private
+  def handle_response(http_resp, &b)
+    case http_resp
+    when Net::HTTPSuccess
+      yield http_resp.body if block_given?
+    else
+      log(:error).message("Unsuccessul API call: %s" % http_resp.inspect)
+      {}
+    end
   end
 
-  def get_leaderboard_url(group_id)
-    params = { group_id: group_id }
-    "https://api.groupme.com/v3/groups/%{group_id}/likes" % params
+  def get(uri, headers)
+    Net::HTTP::Get.new(uri.request_uri, initheader=headers)
   end
 
-  def get_message_url(group_id, message_id)
-    params = {group_id: group_id, message_id: message_id }
-    "https://api.groupme.com/v3/groups/%{group_id}/messages/%{message_id}" % params
-  end
-
-  def bot_post_url
-    "https://api.groupme.com/v3/bots/post"
+  def post(uri, headers, data)
+    Net::HTTP::Post.new(uri.request_uri, initheader=headers).tap { |req|
+      req.body = data
+    }
   end
 end

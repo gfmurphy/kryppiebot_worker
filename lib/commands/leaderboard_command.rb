@@ -44,7 +44,6 @@ module Commands
     def responses
       {
        "standard" => -> { Response.new(@period).respond(leaderboard) },
-       "likes"    => -> { LikeResponse.new(@period, user_map).respond(leaderboard) },
        "hits"     => -> { HitResponse.new(@period).respond(leaderboard) }
       }
     end
@@ -89,33 +88,6 @@ module Commands
       private
       def empty_response
         "No leaderboard data for the #{@period}"
-      end
-    end
-
-    class LikeResponse < Response
-      def initialize(period, user_map)
-        super period
-        @user_map = user_map
-      end
-
-      def respond(messages)
-        messages = Array(messages)
-        return empty_response if messages.empty?
-
-        response = "Like leaderboard for the #{@period}:\n"
-        response << Array(messages)
-          .flat_map { |msg| msg.fetch("favorited_by", []) }
-          .reduce(Hash.new(0)) { |likes, msg| likes[msg] += 1; likes }
-          .map { |user_id, likes| LikeCount.new(@user_map.fetch(user_id, "Someone"), likes) }
-          .sort_by { |lc| -lc.count }
-          .map { |lc| lc.to_s }.join("\n")
-      end
-
-      private
-      LikeCount = Struct.new(:name, :count) do
-        def to_s
-          "* #{name} has given #{count} hearts"
-        end
       end
     end
 

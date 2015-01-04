@@ -43,19 +43,6 @@ module Commands
       end
     end
 
-    def test_likes_week_leaderboard
-      command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard week likes"})
-      command.expects(:get_leaderboard)
-        .with(GroupMe::KRYPPIE_GROUP_ID, "week", GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
-        .returns(@messages)
-      command.expects(:get_group).with(GroupMe::KRYPPIE_GROUP_ID, GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
-        .returns(@group_info)
-      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "Like leaderboard for the week:\n* Foo has given 1 hearts\n* Bar has given 1 hearts\n* Baz has given 1 hearts")
-      assert_nothing_raised do
-        command.execute
-      end
-    end
-
     def test_invalid_period
       command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard year"})
       command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "I don't have a report for 'year'. Try day|week|month")
@@ -66,7 +53,7 @@ module Commands
 
     def test_invalid_type
       command = LeaderboardCommand.new(StubCache.new,  {"text" => "!kryppiebot leaderboard month foo"})
-      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "What is the 'foo' leaderboard? I understand standard|likes|hits")
+      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "What is the 'foo' leaderboard? I understand standard|hits")
       assert_nothing_raised do
         command.execute
       end
@@ -85,32 +72,6 @@ module Commands
 
     def test_message_format
       assert_equal "\"foo\", foo bar. 3 hearts", @response.respond(@messages)
-    end
-
-    def test_empty_messages
-      assert_equal "No leaderboard data for the #{@period}", @response.respond(nil)
-    end
-  end
-
-  class LikeResponseTest < Test::Unit::TestCase
-    def setup
-      @period = "month"
-      @messages = [
-        {"name" => "foo bar", "favorited_by" => ["123", "2345", "3849"]},
-        {"name" => "baz bar", "favorited_by" => ["3849"]},
-        {"name" => "foo bar", "favorited_by" => ["123", "3849"]}
-      ]
-      @user_map = {
-        "123" => "User One",
-        "3849" => "User Two",
-        "3950" => "User Three"
-      }
-      @response = LeaderboardCommand::LikeResponse.new(@period, @user_map)
-    end
-
-    def test_message_format
-      message = "Like leaderboard for the month:\n* User Two has given 3 hearts\n* User One has given 2 hearts\n* Someone has given 1 hearts"
-      assert_equal message, @response.respond(@messages)
     end
 
     def test_empty_messages

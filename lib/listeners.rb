@@ -3,6 +3,8 @@ require "redis"
 require "user_recent_messages"
 
 class Listeners
+  include Enumerable
+
   def self.default_listeners
     [
       ->(msg) { Logging.log(:info).message(msg.inspect) },

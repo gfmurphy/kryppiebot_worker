@@ -5,6 +5,14 @@ class TweetPopularMessage
 
   POPULAR_TWEET_THRESHOLD = ENV["POPULAR_TWEET_THRESHOLD"].to_i
 
+  def self.watch_bfl(redis)
+    recent_messages = UserRecentMessages.new(ENV["BFL_USER_ID"], redis)
+    shit_bfl_says   = ShitBflSays.new(ENV["SBFL_SAYS_TOKEN"], ENV["SBFL_SAYS_SECRET"])
+    new(shit_bfl_says).tweet_messages(recent_messages) do |message|
+      recent_messages.remove message
+    end
+  end
+
   def initialize(twitter)
     @twitter = twitter
   end

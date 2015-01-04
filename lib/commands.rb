@@ -15,12 +15,7 @@ module Commands
   def handler(message)
     text = message["text"].to_s
     if text =~ COMMAND_PREFIX
-      command = text.split(/\s+/)[1].to_s.downcase
-      {
-        "echo" => -> { EchoCommand.new(message).execute },
-        "ping" => -> { PingCommand.new.execute },
-        "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute }
-      }.fetch(command) { -> { NullCommand.new(message).execute } }
+      fetch_command(message)
     else
       -> {
         Listeners.new(Listeners.default_listeners).each do |listener|
@@ -33,5 +28,13 @@ module Commands
   private
   def redis_cache
     NullCache.new
+  end
+
+  def fetch_command(message)
+    command = message["text"].to_s.split(/\s+/)[1].to_s.downcase
+    { "echo" => -> { EchoCommand.new(message).execute },
+      "ping" => -> { PingCommand.new.execute },
+      "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute }
+    }.fetch(command) { -> { NullCommand.new(message).execute } }
   end
 end

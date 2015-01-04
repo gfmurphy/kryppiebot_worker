@@ -3,23 +3,63 @@ require "commands"
 
 class CommandsTest < Test::Unit::TestCase
   def test_handler_no_command
-    assert Commands.handler("text" => "no command").respond_to?(:call)
+    stub_message = { "text" => "no command"}
+    mock_listener = mock.tap { |m| m.expects(:call).with(stub_message) }
+    Listeners.expects(:default_listeners).returns([mock_listener])
+    command = Commands.handler(stub_message)
+
+    assert_respond_to command, :call
+    assert_nothing_raised do
+      command.call
+    end
   end
 
   def test_handler_echo_command
-    assert_respond_to Commands.handler("text" => "!kryppiebot echo boom!"), :call
+    stub_message = { "text" => "!kryppiebot echo boom!" }
+    Commands::EchoCommand.expects(:new).with(stub_message).returns(mock_command)
+    command = Commands.handler(stub_message)
+    assert_respond_to command, :call
+    assert_nothing_raised do
+      command.call
+    end
   end
 
   def test_handler_ping_command
-    assert_respond_to Commands.handler("text" => "!kryppiebot ping"), :call
+    stub_message = { "text" => "!kryppiebot ping" }
+    Commands::PingCommand.expects(:new).returns(mock_command)
+    command = Commands.handler(stub_message)
+    assert_respond_to command, :call
+    assert_nothing_raised do
+      command.call
+    end
   end
 
   def test_handler_leaderboard_command
-    assert_respond_to Commands.handler("text" => '!kryppiebot leaderboard'), :call
+    stub_redis_cache = stub
+    stub_message = { "text" => '!kryppiebot leaderboard' }
+    Commands.expects(:redis_cache).returns(stub_redis_cache)
+    Commands::LeaderboardCommand.expects(:new).with(stub_redis_cache, stub_message)
+      .returns(mock_command)
+    command = Commands.handler(stub_message)
+    assert_respond_to command, :call
+    assert_nothing_raised do
+      command.call
+    end
   end
 
   def test_handler_unknown_command
-    assert_respond_to Commands.handler("text" => "!kryppiebot foo"), :call
+    stub_message = { "text" => "!kryppiebot foo" }
+    Commands::NullCommand.expects(:new).with(stub_message).returns(mock_command)
+    command = Commands.handler(stub_message)
+    assert_respond_to command, :call
+    assert_nothing_raised do
+      command.call
+    end
+  end
+
+  private
+  def mock_command
+    mock(execute: true)
   end
 end
 

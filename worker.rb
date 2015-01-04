@@ -27,8 +27,7 @@ end
 
 REDIS.subscribe("groupme:message") do |on|
   on.message do |channel, message|
-    data = JSON.parse(message.to_s)
-    Commands.handler(data).call(data)
+    Commands.handler(JSON.parse(message.to_s)).call
   end
 end
 

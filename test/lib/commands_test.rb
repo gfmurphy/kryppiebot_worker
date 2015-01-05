@@ -47,6 +47,15 @@ class CommandsTest < Test::Unit::TestCase
     end
   end
 
+  def test_handler_help_command
+    stub_message = { "text" => "!kryppiebot help" }
+    command = Commands.handler(stub_message)
+    assert_respond_to command, :call
+    assert_nothing_raised do
+      command.call
+    end
+  end
+
   def test_handler_unknown_command
     stub_message = { "text" => "!kryppiebot foo" }
     Commands::NullCommand.expects(:new).with(stub_message).returns(mock_command)

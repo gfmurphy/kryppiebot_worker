@@ -1,4 +1,5 @@
 require "commands/echo_command"
+require "commands/help_command"
 require "commands/leaderboard_command"
 require "commands/null_command"
 require "commands/ping_command"
@@ -32,9 +33,14 @@ module Commands
 
   def fetch_command(message)
     command = message["text"].to_s.split(/\s+/)[1].to_s.downcase
+    commands(message).fetch(command) { -> { NullCommand.new(message).execute } }
+  end
+
+  def commands(message)
     { "echo" => -> { EchoCommand.new(message).execute },
       "ping" => -> { PingCommand.new.execute },
-      "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute }
-    }.fetch(command) { -> { NullCommand.new(message).execute } }
+      "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute },
+      "help" => -> { HelpCommand.new.execute }
+    }
   end
 end

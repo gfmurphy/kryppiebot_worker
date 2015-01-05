@@ -7,7 +7,7 @@ module Commands
     def initialize(cache, message)
       @cache = cache
       options = parse_message(message["text"])
-      @type = (options[:type] || "standard").downcase
+      @type = (options[:type] || "top").downcase
       @period = (options[:period] || "month").downcase
     end
 
@@ -43,17 +43,7 @@ module Commands
 
     def responses
       {
-       "standard" => -> { Response.new(@period).respond(leaderboard) },
-       "hits"     => -> { HitResponse.new(@period).respond(leaderboard) }
-      }
-    end
-
-    def user_map
-      @cache.fetch(group_key, expires_in: (3600 * 3)) {
-        get_group(KRYPPIE_GROUP_ID, KRYPPIE_BOT_ACCESS_TOKEN)
-      }.fetch("members", []).reduce({}){ |users, member|
-        users[member["user_id"]] = member["nickname"]
-        users
+       "top" => -> { Response.new(@period).respond(leaderboard) }
       }
     end
 
@@ -80,29 +70,16 @@ module Commands
         messages = Array(messages)
         return empty_response if messages.empty?
 
-        leader = messages.sort_by { |msg| -msg.fetch("favorited_by", []).count }.first
-        count  = leader.fetch("favorited_by", []).count
-        "\"#{leader["text"]}\", #{leader["name"]}. #{count} hearts"
+        leaders = messages.sort_by { |msg| -msg.fetch("favorited_by", []).count }.take(5)
+        leaders.reduce("Top messages for the #{@period}:\n\n") { |msg, leader|
+          count  = leader.fetch("favorited_by", []).count
+          msg << "*  \"#{leader["text"]}\", #{leader["name"]}. #{count} hearts\n"
+        }
       end
 
       private
       def empty_response
         "No leaderboard data for the #{@period}"
-      end
-    end
-
-    class HitResponse < Response
-      def respond(messages)
-        messages = Array(messages)
-        return empty_response if messages.empty?
-
-        response = "Hit leaderboard for the #{@period}:\n"
-        response << Array(messages).reduce(Hash.new(0)) { |likes, msg|
-          likes[msg["name"]] += msg.fetch("favorited_by", []).count
-          likes
-        }.reduce([]) { |lines, user|
-          lines << "* #{user[0]} has received #{user[1]} hearts"
-        }.join("\n")
       end
     end
   end

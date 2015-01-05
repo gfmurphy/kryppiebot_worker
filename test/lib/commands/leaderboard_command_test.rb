@@ -21,23 +21,13 @@ module Commands
       }
     end
 
-    def test_standard_month_leaderboard
+    def test_top_month_leaderboard
       command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard"})
       command.expects(:get_leaderboard)
         .with(GroupMe::KRYPPIE_BOT_ID, "month", GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
         .returns(@messages)
-      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "\"foo\", foo bar. 3 hearts")
-      assert_nothing_raised do
-        command.execute
-      end
-    end
-
-    def test_hits_day_leaderboard
-      command = LeaderboardCommand.new(StubCache.new, {"text" => "!kryppiebot leaderboard day hits"})
-      command.expects(:get_leaderboard)
-        .with(GroupMe::KRYPPIE_BOT_ID, "day", GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
-        .returns(@messages)
-      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "Hit leaderboard for the day:\n* foo bar has received 3 hearts")
+      expected = "Top messages for the month:\n\n*  \"foo\", foo bar. 3 hearts\n"
+      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, expected)
       assert_nothing_raised do
         command.execute
       end
@@ -53,7 +43,7 @@ module Commands
 
     def test_invalid_type
       command = LeaderboardCommand.new(StubCache.new,  {"text" => "!kryppiebot leaderboard month foo"})
-      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "What is the 'foo' leaderboard? I understand standard|hits")
+      command.expects(:post_as_bot).with(GroupMe::KRYPPIE_BOT_ID, "What is the 'foo' leaderboard? I understand top")
       assert_nothing_raised do
         command.execute
       end
@@ -71,28 +61,8 @@ module Commands
     end
 
     def test_message_format
-      assert_equal "\"foo\", foo bar. 3 hearts", @response.respond(@messages)
-    end
-
-    def test_empty_messages
-      assert_equal "No leaderboard data for the #{@period}", @response.respond(nil)
-    end
-  end
-
-  class HitResponseTest < Test::Unit::TestCase
-    def setup
-      @period = "month"
-      @messages = [
-        {"name" => "foo bar", "favorited_by" => ["123", "2345", "4053"]},
-        {"name" => "baz bar", "favorited_by" => ["3849", "3950"]},
-        {"name" => "foo bar", "favorited_by" => ["123", "8495"]}
-      ]
-      @response = LeaderboardCommand::HitResponse.new(@period)
-    end
-
-    def test_message_format
-      message = "Hit leaderboard for the month:\n* foo bar has received 5 hearts\n* baz bar has received 2 hearts"
-      assert_equal message, @response.respond(@messages)
+      expected = "Top messages for the month:\n\n*  \"foo\", foo bar. 3 hearts\n*  \"bar\", baz bar. 2 hearts\n"
+      assert_equal expected, @response.respond(@messages)
     end
 
     def test_empty_messages

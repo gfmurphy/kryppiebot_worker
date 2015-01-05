@@ -9,13 +9,4 @@ class ListenersTest < Test::Unit::TestCase
       assert_respond_to listener, :call
     end
   end
-
-  def test_each
-    mock_listener = mock.tap { |m| m.expects(:call) }
-    listeners = Listeners.new([mock_listener])
-    listeners.each do |listener|
-      assert_equal mock_listener, listener
-      mock_listener.call
-    end
-  end
 end

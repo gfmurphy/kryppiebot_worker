@@ -1,22 +1,16 @@
+require "listeners/bfl_parent_comment"
 require "logging"
 require "redis"
 require "user_recent_messages"
 
-class Listeners
-  include Enumerable
+module Listeners
+  extend self
 
-  def self.default_listeners
+  def default_listeners
     [
       ->(msg) { Logging.log(:info).message(msg.inspect) },
-      ->(msg) { UserRecentMessages.new(msg["user_id"], Redis.new(url: REDIS_URL)).add msg }
+      ->(msg) { UserRecentMessages.new(msg["user_id"], Redis.new(url: REDIS_URL)).add msg },
+      ->(msg) { BflParentComment.new(ENV["BFL_USER_ID"], ShitBflSays.new(ENV["SBFL_SAYS_TOKEN"], ENV["SBFL_SAYS_SECRET"])).tweet(msg) }
     ]
-  end
-
-  def initialize(default_listeners)
-    @listeners = Array(default_listeners)
-  end
-
-  def each(&b)
-    @listeners.each(&b)
   end
 end

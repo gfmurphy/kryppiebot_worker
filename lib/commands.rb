@@ -18,7 +18,7 @@ module Commands
       fetch_command(message)
     else
       -> {
-        Listeners.new(Listeners.default_listeners).each do |listener|
+        Listeners.default_listeners.each do |listener|
           listener.call(message)
         end
       }

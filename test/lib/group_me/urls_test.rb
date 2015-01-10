@@ -17,5 +17,9 @@ module GroupMe
     def test_bot_post_url
       assert_equal "https://api.groupme.com/v3/bots/post", Urls.bot_post_url
     end
+
+    def test_image_service_url
+      assert_equal "https://image.groupme.com/pictures", Urls.image_service_url
+    end
   end
 end

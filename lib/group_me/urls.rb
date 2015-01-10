@@ -20,5 +20,9 @@ module GroupMe
     def bot_post_url
       [API_ENDPOINT, "bots", "post"].join("/")
     end
+
+    def image_service_url
+      "https://image.groupme.com/pictures"
+    end
   end
 end

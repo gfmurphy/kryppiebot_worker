@@ -25,6 +25,10 @@ Rufus::Scheduler.singleton.every '5m' do
   TweetPopularMessage.watch_bfl(Redis.new(url: REDIS_URL))
 end
 
+Rufus::Scheduler.singleton.cron '0 */3 * * *' do
+  CelebrationFeed.add_image_urls(ENV["CELEBRATE_URL"], ImageSet.new("celebrate", Redis.new(url: REDIS_URL)))
+end
+
 REDIS.subscribe("groupme:message") do |on|
   on.message do |channel, message|
     Commands.handler(JSON.parse(message.to_s)).call

@@ -1,7 +1,11 @@
 require "group_me/urls"
+require "group_me/file_store"
 require "json"
 require "logging"
+require "mimemagic"
 require "net/http"
+require "net/http/post/multipart"
+require "open-uri"
 
 module GroupMe
   include Logging
@@ -57,6 +61,17 @@ module GroupMe
     end
   end
 
+  def upload_file(file_url, token)
+    resp = api_request(image_service_url) do |uri, headers|
+      uri.query = URI.encode_www_form access_token: token
+      post_multipart(uri, headers, file_url)
+    end
+
+    handle_response(resp) do |body|
+      JSON.parse(body).fetch("payload")
+    end
+  end
+
   def api_request(url, options={}, &b)
     attempts ||= options.fetch(:attempts, 1)
     uri = URI(url)
@@ -90,5 +105,11 @@ module GroupMe
     Net::HTTP::Post.new(uri.request_uri, initheader=headers).tap { |req|
       req.body = data
     }
+  end
+
+  def post_multipart(uri, headers, file_url)
+    mime_type = MimeMagic.by_path(file_url).type
+    Net::HTTP::Post::Multipart.new(uri.request_uri, 
+      "file" => UploadIO.new(open(file_url), mime_type, File.basename(file_url)))
   end
 end

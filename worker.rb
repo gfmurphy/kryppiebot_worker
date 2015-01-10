@@ -1,6 +1,8 @@
 $:.unshift(File.join(File.dirname(__FILE__), "lib"))
 
+require "celebration_feed"
 require "commands"
+require "image_set"
 require "json"
 require "logger"
 require "redis"

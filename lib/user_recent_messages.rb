@@ -1,5 +1,3 @@
-require "redis"
-
 class UserRecentMessages
   include Enumerable
 

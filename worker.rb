@@ -15,23 +15,22 @@ $stdout.sync = true
 Logging.logger = Kryppiebot.logger
 
 Rufus::Scheduler.singleton.every '5m' do
-  Kryppiebot.redis do |redis| 
+  Kryppiebot.redis_pool do |redis|
     TweetPopularMessage.watch_bfl(redis)
   end
 end
 
 Rufus::Scheduler.singleton.cron '0 0,12 * * *' do
-  Kryppiebot.redis do |redis| 
+  Kryppiebot.redis_pool do |redis|
     CelebrationFeed.add_image_urls(ENV["CELEBRATE_URL"], ImageSet.new(ImageSet::CONGRATS, redis))
   end
 end
 
-Kryppiebot.redis do |redis|
-  redis.subscribe("groupme:message") do |on|
-    on.message do |channel, message|
-      Commands.handler(JSON.parse(message.to_s)).call
-    end
+Kryppiebot.redis.subscribe("groupme:message") do |on|
+  on.message do |channel, message|
+    Commands.handler(JSON.parse(message.to_s)).call
   end
 end
+
 
 

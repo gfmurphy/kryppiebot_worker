@@ -27,7 +27,7 @@ Rufus::Scheduler.singleton.every '5m' do
   TweetPopularMessage.watch_bfl(Redis.new(url: REDIS_URL))
 end
 
-Rufus::Scheduler.singleton.cron '0 */3 * * *' do
+Rufus::Scheduler.singleton.cron '0 0,12 * * *' do
   CelebrationFeed.add_image_urls(ENV["CELEBRATE_URL"], ImageSet.new(ImageSet::CONGRATS, Redis.new(url: REDIS_URL)))
 end
 

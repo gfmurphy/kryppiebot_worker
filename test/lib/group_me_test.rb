@@ -66,6 +66,18 @@ class GroupMeTest < Test::Unit::TestCase
     end
   end
 
+  def test_post_as_bot_with_image
+    data = { bot_id: 1, text: "foo", picture_url: "http://example.com/image.jpeg" }.to_json
+    GroupMe.expects(:api_request).with(GroupMe.bot_post_url).yields(@mock_uri, @mock_headers)
+      .returns(@stub_response)
+    GroupMe.expects(:post).with(@mock_uri, @mock_headers, data)
+    GroupMe.expects(:handle_response).yields("success")
+
+    assert_nothing_raised do
+      GroupMe.post_as_bot(1, "foo", "http://example.com/image.jpeg")
+    end
+  end
+
   def test_upload_file
     stub_file_url = "http://imgur.com/image.jpg"
     stub_token = "foo"

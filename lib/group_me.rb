@@ -50,9 +50,11 @@ module GroupMe
     end
   end
 
-  def post_as_bot(bot_id, message)
+  def post_as_bot(bot_id, message, picture_url=nil)
     resp = api_request(bot_post_url) do |uri, headers|
-      data = { bot_id: bot_id, text: message }.to_json
+      data = { bot_id: bot_id, text: message }.tap { |d|
+        d[:picture_url] = picture_url if picture_url
+      }.to_json
       post(uri, headers, data)
     end
 

@@ -16,7 +16,7 @@ Logging.logger = Kryppiebot.logger
 
 Rufus::Scheduler.singleton.every '5m' do
   Kryppiebot.redis do |redis| 
-    TweetPopularMessage.watch_bfl(Redis.new(url: REDIS_URL))
+    TweetPopularMessage.watch_bfl(redis)
   end
 end
 

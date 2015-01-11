@@ -28,7 +28,7 @@ Rufus::Scheduler.singleton.every '5m' do
 end
 
 Rufus::Scheduler.singleton.cron '0 */3 * * *' do
-  CelebrationFeed.add_image_urls(ENV["CELEBRATE_URL"], ImageSet.new("celebrate", Redis.new(url: REDIS_URL)))
+  CelebrationFeed.add_image_urls(ENV["CELEBRATE_URL"], ImageSet.new(ImageSet::CONGRATS, Redis.new(url: REDIS_URL)))
 end
 
 REDIS.subscribe("groupme:message") do |on|

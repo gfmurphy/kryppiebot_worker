@@ -1,6 +1,8 @@
 require "digest/md5"
 
 class ImageSet
+  CONGRATS = "congrats"
+
   def initialize(name, redis)
     @set = "#{name}"
     @images = "#{name}:images"
@@ -12,8 +14,8 @@ class ImageSet
     key = hash(url)
     image = files.put(url)
     @redis.multi do
-        @redis.sadd(@set, key)
-        @redis.hmset(@images, key, image["url"])
+      @redis.sadd(@set, key)
+      @redis.hmset(@images, key, image["url"])
     end unless image.empty?
   end
 

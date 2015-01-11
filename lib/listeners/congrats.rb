@@ -76,9 +76,9 @@ module Listeners
     class CongratsResponse
       attr_reader :name
 
-      def initialize(response, name=nil)
-        @text = response
-        @name = name
+      def initialize(*args)
+        @text = args[0]
+        @name = args[1]
       end
 
       def text

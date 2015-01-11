@@ -41,6 +41,10 @@ module Listeners
   end
 
   class CongratsMessage < Test::Unit::TestCase
+    def test_response
+      assert_kind_of Congrats::CongratsResponse, Congrats::CongratsMessage.new("foo").response
+    end
+
     def test_parse_no_congrats
       assert_equal [], Congrats::CongratsMessage.new("what a jerk, flem").parse_message      
     end

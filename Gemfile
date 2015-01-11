@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 ruby "2.1.5"
 
+gem "connection_pool", "~> 2.1"
 gem "json", "~> 1.8"
 gem "mimemagic", "~> 0.2"
 gem "multipart-post", "~> 2.0"

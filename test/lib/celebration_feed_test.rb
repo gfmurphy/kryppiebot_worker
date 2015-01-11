@@ -3,22 +3,13 @@ require "celebration_feed"
 
 module CelebrationFeed
   class CelebrationFeedTest < Test::Unit::TestCase
-    def setup
-      @old_token = ENV["KRYPPIE_BOT_ACCESS_TOKEN"]
-      ENV["KRYPPIE_BOT_ACCESS_TOKEN"] = "blah"
-    end
-
-    def teardown
-      ENV["KRYPPIE_BOT_ACCESS_TOKEN"] = @old_token
-    end
-
     def test_add_image_urls      
       rss_url = stub
       stub_image = stub
       stub_files = stub
       mock_image_set = mock.tap { |m| m.expects(:add).with(stub_image, stub_files) }
       mock_rss = mock(image_urls: [stub_image])
-      GroupMe::FileStore.expects(:new).with("blah").returns(stub_files)
+      GroupMe::FileStore.expects(:new).with(GroupMe::KRYPPIE_BOT_ACCESS_TOKEN).returns(stub_files)
       RSS.expects(:new).with(rss_url).returns(mock_rss)
       
       assert_nothing_raised do

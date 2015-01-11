@@ -1,3 +1,4 @@
+require "group_me"
 require 'logging'
 require 'open-uri'
 require 'nokogiri'
@@ -8,7 +9,7 @@ module CelebrationFeed
   extend self
 
   def add_image_urls(rss_url, image_set)
-    file_store = GroupMe::FileStore.new(ENV["KRYPPIE_BOT_ACCESS_TOKEN"])
+    file_store = GroupMe::FileStore.new(GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
     RSS.new(rss_url).image_urls.each do |image_url|
       image_set.add(image_url, file_store)
     end

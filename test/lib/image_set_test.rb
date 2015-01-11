@@ -31,8 +31,8 @@ class ImageSetTest < Test::Unit::TestCase
     @mock_redis.expects(:multi).never
     @mock_redis.expects(:sadd).never
     @mock_redis.expects(:hmset).never
+    @mock_redis.expects(:sismember).with(@stub_name, Digest::MD5.hexdigest("foo")).returns(true)
     set = ImageSet.new(@stub_name, @mock_redis)
-    set.expects(:member?).with("foo").returns(true)
     assert set.add("foo", stub)
   end
 
@@ -43,7 +43,7 @@ class ImageSetTest < Test::Unit::TestCase
   end
 
   def test_member?
-    @mock_redis.expects(:sismember).with(Digest::MD5.hexdigest("bar")).returns(true)
+    @mock_redis.expects(:sismember).with(@stub_name, Digest::MD5.hexdigest("bar")).returns(true)
     assert ImageSet.new(@stub_name, @mock_redis).member?("bar")
   end
 end

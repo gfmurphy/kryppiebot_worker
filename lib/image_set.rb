@@ -20,11 +20,11 @@ class ImageSet
   end
 
   def random
-    @redis.hget(@images, @redis.srandmember)
+    @redis.hget(@images, @redis.srandmember(@set))
   end
 
   def member?(url)
-    @redis.sismember(hash(url))
+    @redis.sismember(@set, hash(url))
   end
 
   private

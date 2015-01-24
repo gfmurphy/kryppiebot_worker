@@ -27,8 +27,12 @@ module Listeners
     def record_correction!
       @redis.multi do
         @redis.set(key, "1")
-        @redis.expire(key, 3600)
+        @redis.expire(key, expires)
       end
+    end
+
+    def expires
+      3600 + rand(-1800..1800)
     end
 
     def recent_correction?

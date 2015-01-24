@@ -34,8 +34,8 @@ class ImageSet
   private
   def expire_set!
     if @expires
-      @redis.expires @set, @expires
-      @redis.expires @images, @expires
+      @redis.expire @set, @expires
+      @redis.expire @images, @expires
     end
   end
 

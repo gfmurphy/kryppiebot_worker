@@ -1,3 +1,4 @@
+require "initializing_image_set"
 require "gingerice"
 require "group_me"
 
@@ -35,6 +36,13 @@ module Listeners
     end
 
     class Response
+      # TODO source images dynamically from kryppiebot.
+      IMAGES = [
+        'http://kryppiebot.herokuapp.com/images/jon/fish.jpg',
+        'http://kryppiebot.herokuapp.com/images/jon/old.jpg',
+        'http://kryppiebot.herokuapp.com/images/jon/pool_feet.jpg'
+      ]
+
       def initialize(image_set, message)
         @image_set = image_set
         @message = message.to_s
@@ -50,7 +58,7 @@ module Listeners
       end
 
       def image
-        @image ||= GrammarNazi::Image.new(@image_set).select_image
+        @image ||= InitializingImageSet.new(@image_set, IMAGES).random
       end
 
       private
@@ -60,34 +68,6 @@ module Listeners
 
       def responses
         ["WTF?", "EGREGIOUS!", "Are you having a stroke?", "You're an idiot."]
-      end
-    end
-
-    # TODO extract this pattern into generic concept. Boing listener uses same kind
-    # of image seeder.
-    class Image
-
-      # TODO source images dynamically from kryppiebot.
-      IMAGES = [
-        'http://kryppiebot.herokuapp.com/images/jon/fish.jpg',
-        'http://kryppiebot.herokuapp.com/images/jon/old.jpg',
-        'http://kryppiebot.herokuapp.com/images/jon/pool_feet.jpg'
-      ]
-
-      def initialize(image_set)
-        @image_set = image_set
-      end
-
-      def select_image
-        image = @image_set.random
-        if image.nil?
-          file_store = GroupMe::FileStore.new(GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
-          IMAGES.reduce([]) {|imgs, url|
-            imgs << @image_set.add(url, file_store)["url"]
-          }.compact.sample
-        else
-          image
-        end
       end
     end
   end

@@ -1,3 +1,4 @@
+require "initializing_image_set"
 require "group_me"
 
 module Listeners
@@ -16,6 +17,8 @@ module Listeners
 
     private
     class BoingResponse
+      IMAGES = ['http://kryppiebot.herokuapp.com/images/arv.jpg']
+
       attr_reader :text
 
       def initialize(image_set, message)
@@ -29,27 +32,7 @@ module Listeners
       end
 
       def image
-        @image ||= Boing::BoingImage.new(@image_set).select_image
-      end
-    end
-
-    class BoingImage
-      IMAGES = ['http://kryppiebot.herokuapp.com/images/arv.jpg']
-
-      def initialize(image_set)
-        @image_set = image_set
-      end
-
-      def select_image
-        image = @image_set.random
-        if image.nil?
-          file_store = GroupMe::FileStore.new(GroupMe::KRYPPIE_BOT_ACCESS_TOKEN)
-          IMAGES.reduce([]) {|imgs, url|
-            imgs << @image_set.add(url, file_store)["url"]
-          }.compact.sample
-        else
-          image
-        end
+        @image ||= InitializingImageSet.new(@image_set, IMAGES).random
       end
     end
   end

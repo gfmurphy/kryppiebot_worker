@@ -47,18 +47,18 @@ module Listeners
 
     def test_corrected_on_bad_sentence_with_no_image
       mock_parser = mock(parse: {"corrections" => [stub, stub]})
-      mock_image = mock(select_image: nil)
+      mock_image = mock(random: nil)
       Gingerice::Parser.expects(:new).returns(mock_parser)
-      GrammarNazi::Image.expects(:new).returns(mock_image)
+      InitializingImageSet.expects(:new).returns(mock_image)
       response = GrammarNazi::Response.new(@image_set, "Your a idiot")
       assert !response.corrected?
     end
 
     def text_corrected_on_bad_sentence_with_image
       mock_parser = mock(parse: {"corrections" => [stub, stub]})
-      mock_image = mock(select_image: stub)
+      mock_image = mock(random: stub)
       Gingerice::Parser.expects(:new).returns(mock_parser)
-      GrammarNazi::Image.expects(:new).returns(mock_image)
+      InitializingImageSet.expects(:new).returns(mock_image)
       response = GrammarNazi::Response.new(@image_set, "Your a idiot")
       assert response.corrected?
     end
@@ -71,8 +71,8 @@ module Listeners
     end
 
     def test_image
-      stub_image = stub(select_image: "foo")
-      GrammarNazi::Image.expects(:new).with(@image_set).returns(stub_image)
+      stub_image = stub(random: "foo")
+      InitializingImageSet.expects(:new).with(@image_set, GrammarNazi::Response::IMAGES).returns(stub_image)
       response = GrammarNazi::Response.new(@image_set, "Your a idiot")
       assert_equal "foo", response.image
     end

@@ -3,20 +3,23 @@ require "digest/md5"
 class ImageSet
   CONGRATS = "congrats"
 
-  def initialize(name, redis)
+  def initialize(name, redis, opts={})
     @set = "#{name}"
     @images = "#{name}:images"
     @redis = redis
+    @expires = opts[:expires_in]
   end
 
   def add(url, files)
     return true if member?(url)
     key = hash(url)
-    image = files.put(url)
-    @redis.multi do
-      @redis.sadd(@set, key)
-      @redis.hmset(@images, key, image["url"])
-    end unless image.empty?
+    files.put(url).tap { |img|
+      @redis.multi do
+        @redis.sadd(@set, key)
+        @redis.hmset(@images, key, img["url"])
+        expire_set!
+      end unless img.empty?
+    }
   end
 
   def random
@@ -28,6 +31,13 @@ class ImageSet
   end
 
   private
+  def expire_set!
+    if @expires
+      @redis.expires @set, @expires
+      @redis.expires @images, @expires
+    end
+  end
+
   def hash(url)
     Digest::MD5.hexdigest(url)
   end

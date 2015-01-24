@@ -14,7 +14,7 @@ class ImageSetTest < Test::Unit::TestCase
     @mock_redis.expects(:hmset).with("#{@stub_name}:images", Digest::MD5.hexdigest("foo"), "bar")
     set = ImageSet.new(@stub_name, @mock_redis)
     set.expects(:member?).with("foo").returns(false)
-    assert_equal nil, set.add("foo", stub_files)
+    assert_equal({"url" => "bar"}, set.add("foo", stub_files))
   end
 
   def test_add_with_empty_image
@@ -24,7 +24,7 @@ class ImageSetTest < Test::Unit::TestCase
     @mock_redis.expects(:hmset).never
     set = ImageSet.new(@stub_name, @mock_redis)
     set.expects(:member?).with("foo").returns(false)
-    assert_equal nil, set.add("foo", stub_files)
+    assert_equal({}, set.add("foo", stub_files))
   end
 
   def test_add_already_member

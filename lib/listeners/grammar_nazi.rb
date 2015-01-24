@@ -44,7 +44,8 @@ module Listeners
       IMAGES = [
         'http://kryppiebot.herokuapp.com/images/jon/fish.jpg',
         'http://kryppiebot.herokuapp.com/images/jon/old.jpg',
-        'http://kryppiebot.herokuapp.com/images/jon/pool_feet.jpg'
+        'http://kryppiebot.herokuapp.com/images/jon/pool_feet.jpg',
+        'http://kryppiebot.herokuapp.com/images/jon/teddy.png'
       ]
 
       def initialize(image_set, message)

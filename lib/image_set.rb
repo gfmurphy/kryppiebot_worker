@@ -3,6 +3,7 @@ require "digest/md5"
 class ImageSet
   CONGRATS = "congrats"
   BOING = "boing"
+  JON = "jon"
 
   def initialize(name, redis, opts={})
     @set = "#{name}"

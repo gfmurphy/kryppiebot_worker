@@ -2,6 +2,7 @@ require "kryppiebot"
 require "listeners/bfl_parent_comment"
 require "listeners/boing"
 require "listeners/congrats"
+require "listeners/grammar_nazi"
 require "listeners/thank_you"
 require "logging"
 require "user_recent_messages"
@@ -15,6 +16,7 @@ module Listeners
     ->(msg) { BflParentComment.new(ENV["BFL_USER_ID"], ShitBflSays.new(ENV["SBFL_SAYS_TOKEN"], ENV["SBFL_SAYS_SECRET"])).tweet(msg) },
     ->(msg) { Kryppiebot.redis_pool { |redis| Congrats.new(redis).listen(msg) } },
     ->(msg) { Kryppiebot.redis_pool { |redis| Boing.new(redis).listen(msg) } },
+    ->(msg) { Kryppiebot.redis_pool { |redis| GrammarNazi.new(redis).listen(msg) } },
     ->(msg) { ThankYou.new.listen(msg) }
   ].freeze
 

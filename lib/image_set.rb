@@ -18,6 +18,7 @@ class ImageSet
       @redis.multi do
         @redis.sadd(@set, key)
         @redis.hmset(@images, key, img["url"])
+        expire_set!
       end unless img.empty?
     }
   end
@@ -31,6 +32,13 @@ class ImageSet
   end
 
   private
+  def expire_set!
+    if @expires
+      @redis.expires @set, @expires
+      @redis.expires @images, @expires
+    end
+  end
+
   def hash(url)
     Digest::MD5.hexdigest(url)
   end

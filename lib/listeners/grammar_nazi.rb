@@ -54,7 +54,7 @@ module Listeners
       end
 
       def corrected?
-        (@corrected ||= parse) && Array(@corrected["corrections"]).count > 0 && image
+        (@corrected ||= parse) && error_ratio > 0.125 && image
       end
 
       def text
@@ -66,6 +66,10 @@ module Listeners
       end
 
       private
+      def error_ratio
+        @corrected["corrections"].count / @message.split(/\W+/).count.to_f
+      end
+
       def parse
         Gingerice::Parser.new.parse @message
       end

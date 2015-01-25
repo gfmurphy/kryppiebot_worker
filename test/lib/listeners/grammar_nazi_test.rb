@@ -44,8 +44,16 @@ module Listeners
       assert !response.corrected?
     end
 
+    def test_corrected_on_bad_sentence_under_ratio
+      mock_parser = mock(parse: {"corrections" => [stub]})
+      Gingerice::Parser.expects(:new).returns(mock_parser)
+      response = GrammarNazi::Response.new(@image_set,
+        "your a idiot is not enought to trigger the corrected response for this long message")
+      assert !response.corrected?
+    end
+
     def test_corrected_on_bad_sentence_with_no_image
-      mock_parser = mock(parse: {"corrections" => [stub, stub]})
+      mock_parser = mock(parse: {"corrections" => [stub]})
       mock_image = mock(random: nil)
       Gingerice::Parser.expects(:new).returns(mock_parser)
       InitializingImageSet.expects(:new).returns(mock_image)
@@ -54,7 +62,7 @@ module Listeners
     end
 
     def text_corrected_on_bad_sentence_with_image
-      mock_parser = mock(parse: {"corrections" => [stub, stub]})
+      mock_parser = mock(parse: {"corrections" => [stub]})
       mock_image = mock(random: stub)
       Gingerice::Parser.expects(:new).returns(mock_parser)
       InitializingImageSet.expects(:new).returns(mock_image)

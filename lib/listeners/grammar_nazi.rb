@@ -13,7 +13,7 @@ module Listeners
 
     def listen(message)
       response = GrammarNazi::Response.new(@image_set, message["text"])
-      if response.corrected? && !recent_correction?
+      if !recent_correction? && response.corrected?
         post_as_bot(KRYPPIE_BOT_ID, response.text, response.image)
         record_correction!
       end
@@ -32,7 +32,7 @@ module Listeners
     end
 
     def expires
-      3600 + rand(-1800..1800)
+      43200 + rand(-3600..3600)
     end
 
     def recent_correction?
@@ -51,11 +51,10 @@ module Listeners
       def initialize(image_set, message)
         @image_set = image_set
         @message = message.to_s
-        @corrected = parse
       end
 
       def corrected?
-        Array(@corrected["corrections"]).count > 0 && image
+        (@corrected ||= parse) && Array(@corrected["corrections"]).count > 0 && image
       end
 
       def text

@@ -23,8 +23,7 @@ module Listeners
 
     def test_listen_to_ok_grammar
       message = {"text" => "You're an idiot"}
-      stub_response = stub(corrected?: false)
-      GrammarNazi::Response.expects(:new).returns(stub_response)
+      @mock_redis.expects(:get).returns("1")
       grammar_nazi = GrammarNazi.new(@mock_redis)
       grammar_nazi.expects(:post_as_bot).never
       assert_nothing_raised do

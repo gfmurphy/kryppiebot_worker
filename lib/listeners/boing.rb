@@ -24,15 +24,15 @@ module Listeners
       def initialize(image_set, message)
         @image_set = image_set
         @message = message.to_s
-        @text = ""
+        @text = "CENSORED"
       end
 
       def boing?
-        @message =~ /\bboing\b/i && image
+        @message =~ /\bboing\b/i
       end
 
       def image
-        @image ||= InitializingImageSet.new(@image_set, IMAGES).random
+        nil
       end
     end
   end

@@ -38,19 +38,15 @@ module Listeners
     end
 
     def test_boing_with_missing_image
-      mock_boing_image = mock(random: nil)
-      InitializingImageSet.expects(:new).with(@image_set, Boing::BoingResponse::IMAGES).returns(mock_boing_image)
       boing_response = Boing::BoingResponse.new(@image_set, "boing")
-      assert !boing_response.boing?
+      assert boing_response.boing?
     end
 
     def test_boing
-      mock_boing_image = mock(random: "http://example.com/image.jpg")
-      InitializingImageSet.expects(:new).with(@image_set, Boing::BoingResponse::IMAGES).returns(mock_boing_image)
       boing_response = Boing::BoingResponse.new(@image_set, "boing")
       assert boing_response.boing?
-      assert_equal "", boing_response.text
-      assert_equal "http://example.com/image.jpg", boing_response.image
+      assert_equal "CENSORED", boing_response.text
+      assert_equal nil, boing_response.image
     end
   end
 end

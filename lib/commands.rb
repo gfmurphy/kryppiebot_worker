@@ -33,7 +33,7 @@ module Commands
 
   def fetch_command(message)
     command = message["text"].to_s.split(/\s+/)[1].to_s.downcase
-    commands(message).fetch(command) { -> { NullCommand.new(message).execute } }
+    -> {}
   end
 
   def commands(message)

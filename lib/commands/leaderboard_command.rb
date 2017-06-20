@@ -55,7 +55,7 @@ module Commands
         leaders = messages.take(5)
         leaders.reduce(["Leaderboard for #{@period}:"]) { |a, l|
           count = l.fetch("favorited_by", []).count
-          a << "* #{l["text"]} | #{l["name"]} | #{count} \U+2764"
+          a << "* #{l["text"]} | #{l["name"]} | #{count} \u2764"
         }.join("\n")
       end
     end

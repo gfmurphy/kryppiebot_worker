@@ -1,3 +1,5 @@
+require "group_me"
+
 module Commands
   class HelpCommand
     include GroupMe

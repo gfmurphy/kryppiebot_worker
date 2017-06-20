@@ -19,6 +19,7 @@ GEM
       multi_json (~> 1.0)
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
+    text-table (1.2.4)
 
 PLATFORMS
   ruby
@@ -32,3 +33,4 @@ DEPENDENCIES
   multipart-post (~> 2.0)
   rake (~> 10.3)
   redis (~> 3.1)
+  text-table

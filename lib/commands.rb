@@ -26,19 +26,14 @@ module Commands
     end
   end
 
-  private
-  def redis_cache
-    NullCache.new
-  end
-
-  def fetch_command(message)
+  private def fetch_command(message)
     command = message["text"].to_s.split(/\s+/)[1].to_s.downcase
     commands(message).fetch(command) { -> { NullCommand.new(message).execute } }
   end
 
-  def commands(message)
+  private def commands(message)
     { 
-      "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute },
+      "leaderboard" => -> { LeaderboardCommand.new(message).execute },
       "help" => -> { HelpCommand.new.execute }
     }
   end

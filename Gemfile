@@ -7,6 +7,7 @@ gem "mimemagic", "~> 0.2"
 gem "multipart-post", "~> 2.0"
 gem "rake", "~> 10.3"
 gem "redis", "~> 3.1"
+gem "text-table"
 
 group :test do
   gem "mocha", "~> 1.1", require: false

@@ -17,9 +17,7 @@ class CommandsTest < Test::Unit::TestCase
   def test_handler_leaderboard_command
     stub_redis_cache = stub
     stub_message = { "text" => '!kryppiebot leaderboard' }
-    Commands.expects(:redis_cache).returns(stub_redis_cache)
-    Commands::LeaderboardCommand.expects(:new).with(stub_redis_cache, stub_message)
-      .returns(mock_command)
+    Commands::LeaderboardCommand.expects(:new).with(stub_message).returns(mock_command)
     command = Commands.handler(stub_message)
     assert_respond_to command, :call
     assert_nothing_raised do

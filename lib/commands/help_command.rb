@@ -9,10 +9,8 @@ module Commands
     private
     def message
       <<-MSG
-The most commonly used kryppiebot commands are:
+The kryppiebot commands are:
 
-* !kryppiebot ping - bot responds with PONG!
-* !kryppiebot echo [text] - bot echos [text] in response
 * !kryppiebot leaderboard [month|week|day] - top 5 messages for period
 * !kryppiebot help - this message
 

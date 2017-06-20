@@ -39,7 +39,7 @@ module Commands
     end
 
     def test_message_format
-      assert_match /foo.+3 hearts/, @response.respond(@messages)
+      assert_match /foo.+3/, @response.respond(@messages)
     end
 
     def test_empty_messages

@@ -53,10 +53,10 @@ module Commands
         messages = Array(messages)
         return "No leaderboard data for the #{@period}" if messages.empty?
         leaders = messages.take(5)
-        leaders.reduce([]) { |a, l|
+        leaders.reduce(["Leaderboard for #{@period}:"]) { |a, l|
           count = l.fetch("favorited_by", []).count
-          a << [l["name"], l["text"], "#{count} hearts"]
-        }.to_text_table.to_s
+          a << "* #{l["text"]} | #{l["name"]} | #{count} \U+2764"
+        }.join("\n")
       end
     end
   end

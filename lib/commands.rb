@@ -37,8 +37,7 @@ module Commands
   end
 
   def commands(message)
-    { "echo" => -> { EchoCommand.new(message).execute },
-      "ping" => -> { PingCommand.new.execute },
+    { 
       "leaderboard" => -> { LeaderboardCommand.new(redis_cache, message).execute },
       "help" => -> { HelpCommand.new.execute }
     }

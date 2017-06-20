@@ -1,8 +1,6 @@
-require "commands/echo_command"
 require "commands/help_command"
 require "commands/leaderboard_command"
 require "commands/null_command"
-require "commands/ping_command"
 require "group_me"
 require "null_cache"
 require "listeners"

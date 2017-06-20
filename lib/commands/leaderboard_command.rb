@@ -1,4 +1,5 @@
 require "group_me"
+require "text-table"
 
 module Commands
   class LeaderboardCommand
